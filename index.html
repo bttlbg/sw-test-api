@@ -20,48 +20,7 @@
 </head>
 
 <body>
-    <h1>Consulta de Personajes de Star Wars</h1>
-    <input type="text" id="nombre" placeholder="Nombre del personaje">
-    <button onclick="buscarPersonaje()">Buscar</button>
-    <table id="tablaResultados">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Altura</th>
-                <th>Peso</th>
-                <th>Color de pelo</th>
-            </tr>
-        </thead>
-        <tbody id="resultadosBody">
-        </tbody>
-    </table>
-
-    <script>
-        async function buscarPersonaje() {
-            const nombre = document.getElementById('nombre').value;
-            const url = `http://localhost:3000/personaje/${nombre}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                const resultadosBody = document.getElementById('resultadosBody');
-                resultadosBody.innerHTML = '';
-
-                data.forEach(personaje => {
-                    const row = resultadosBody.insertRow();
-                    row.innerHTML = `
-            <td>${personaje.name}</td>
-            <td>${personaje.height}</td>
-            <td>${personaje.mass}</td>
-            <td>${personaje.hair_color}</td>
-          `;
-                });
-            } catch (error) {
-                console.error('Error al buscar el personaje:', error);
-            }
-        }
-    </script>
+    
 </body>
 
 </html>

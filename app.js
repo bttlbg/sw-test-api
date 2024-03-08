@@ -6,9 +6,12 @@ const PORT = 3000;
 app.use(express.json());
 
 async function fetchData(url) {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        throw new Error(`Error fetching data from ${url}: ${error.message}`);
+    }
 }
 
 async function getPlanetResidents() {
@@ -21,7 +24,7 @@ async function getPlanetResidents() {
 
     for (let planet of allPlanets) {
         for (let endpoint of planet.residents) {
-            const resident = await fetchData_Residents(endpoint);
+            const resident = await fetchData(endpoint);
             resident.homeworld = planet.name;
             allResidents.push(resident);
         }
@@ -159,7 +162,4 @@ app.get('/personajes', async (req, res) => {
 });
 
 
-
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+module.exports = app;
