@@ -1,9 +1,12 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 const app = express();
+const functions = require('firebase-functions');
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 async function fetchData(url) {
     try {
@@ -12,25 +15,6 @@ async function fetchData(url) {
     } catch (error) {
         throw new Error(`Error fetching data from ${url}: ${error.message}`);
     }
-}
-
-async function getPlanetResidents() {
-    const allPlanets = await getAllPlanets();
-
-    // Ordenar planetas alfabéticamente
-    allPlanets.sort((a, b) => a.name.localeCompare(b.name));
-
-    let allResidents = [];
-
-    for (let planet of allPlanets) {
-        for (let endpoint of planet.residents) {
-            const resident = await fetchData(endpoint);
-            resident.homeworld = planet.name;
-            allResidents.push(resident);
-        }
-    }
-
-    return allResidents;
 }
 
 async function getAllCharacters() {
@@ -56,6 +40,7 @@ async function getAllCharactersOrdened(orderBy = 'name') {
         if (orderBy === 'name') {
             return valueA.localeCompare(valueB);
         } else {
+            // Los valores son numericos pero algunos vienen como unknown.
             if (valueA === 'unknown') {
                 valueA = Infinity;
             } else {
@@ -87,6 +72,7 @@ async function getAllPlanets() {
 }
 
 app.get('/residentes', async (req, res) => {
+    // Este enfpoint envia los resultados sin paginar.
     try {
         const allPlanets = await getAllPlanets();
 
@@ -122,6 +108,7 @@ app.get('/personaje/:nombre', async (req, res) => {
 });
 
 app.get('/personajes', async (req, res) => {
+    // Este endpoint envia los resultados paginados.
     const { ordenar, page = 1 } = req.query;
     const limit = 10;
 
@@ -161,5 +148,4 @@ app.get('/personajes', async (req, res) => {
     }
 });
 
-
-module.exports = app;
+exports.api = functions.https.onRequest(app);
