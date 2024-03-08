@@ -148,4 +148,8 @@ app.get('/personajes', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 exports.api = functions.https.onRequest(app);
